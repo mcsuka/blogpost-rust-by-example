@@ -127,20 +127,20 @@ fn functions() {
     println!("Matching line: {}", if idx < lines.len() {lines[idx]} else {"NOT FOUND"});
 }
 
-fn return_match(pattern: String, lines: Vec<&str>) -> Option<String> {
+fn return_match(pattern: &str, lines: Vec<&str>) -> Option<String> {
     lines
         .iter()
-        .find(|&line| line.contains(&pattern))
+        .find(|&line| line.contains(pattern))
         .map(|&line| line.to_string())  // map &str to a String instance
 }
 
 // Ownership example
 fn ownership() {
     let lines = vec!["abcde", "defgh", "ghijk"];
-    let pattern = "gh".to_string();
+    let pattern = "gh";
     let line = return_match(pattern, lines);
-    // at this point "lines" and "pattern" went out of scope,
-    // their ownership is transferred to the return_match() function
+    // at this point ownership of "lines" was transferred to the return_match() function
+    // the scope of "lines" is ended, it cannot be used below this point 
 }
 
 fn return_match_borrow<'a>(pattern: &str, lines: &'a Vec<&str>) -> Option<&'a str> {
@@ -153,8 +153,11 @@ fn return_match_borrow<'a>(pattern: &str, lines: &'a Vec<&str>) -> Option<&'a st
 // Lifetime example
 fn life_time() {
     let lines = vec!["abcde", "defgh", "ghijk"];
-    let pattern = "gh".to_string();
-    let line = return_match_borrow(&pattern, &lines);
+    let pattern = "gh";
+    let line = return_match_borrow(pattern, &lines);
+    // The ownership of "lines" is not transferred to the return_match() function
+    // "lines" can be used below this point:
+    let line0 = lines[0];
 }
 
 // Borrowing examples
